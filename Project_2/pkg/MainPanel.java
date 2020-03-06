@@ -48,13 +48,18 @@ public class MainPanel extends JPanel {
 
 	setBackground(new Color(220, 220, 220)); //sets background color to gray
 	setPreferredSize(new Dimension(800, 600)); //sets preferred size to 800 x 600
-	myPats = new PatientCollection("./data.csv");
+	myPats = new PatientCollection("./data.csv"); //sets default file to "data.csv in pkg folder"
 
 	//////////////////////////
 	//Creates program banner
 	//////////////////////////
 	JLabel pimsBanner = new JLabel("");
-	pimsBanner.setBounds(160, 5, 480, 200);
+	pimsBanner.addMouseListener(new MouseAdapter() {
+		public void mouseClicked(MouseEvent e) {
+			JOptionPane.showMessageDialog(null,"Thank you for using PIMS! \n\n Designed by Alexander Salas for the University of Arkansas Medical Science \n\n Dr. Mark Doderer, University of Central Arkansas \n\n All rights waved.", "PIMS", JOptionPane.PLAIN_MESSAGE);
+		}
+	});
+	pimsBanner.setBounds(160, 22, 480, 166);
 	pimsBanner.setIcon(new ImageIcon(MainPanel.class.getResource("/pkg/pimsBANNER.png")));
 	add(pimsBanner);
 
@@ -64,7 +69,6 @@ public class MainPanel extends JPanel {
 
 	//Creates Result radio buttons label
 	JLabel lblResult = new JLabel("Result");
-	lblResult.setBackground(Color.WHITE);
 	lblResult.setBounds(138, 297, 46, 14);
 	add(lblResult);
 
@@ -72,24 +76,25 @@ public class MainPanel extends JPanel {
 	DPRadioButton = new JRadioButton("Disease Progression");
 	DPRadioButton.addActionListener(new ActionListener() {
 
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) { //if button was pressed do...
 
 			if(!(selectedPatient.equals("(none)"))){ //if an ID was selected do...
 				myPats.getPatient(selectedPatient).setResult("DP");
-				updateSelectedTable();
-				updatePatCollectionTable();
+				updateSelectedTable(); //update selectedTable to show change
+				updatePatCollectionTable();//update PatCollectionTable to show change
 			}
 		}
 	});
 	buttonGroup.add(DPRadioButton);
 	DPRadioButton.setBounds(164, 320, 150, 20);
-	DPRadioButton.setToolTipText("");
 	add(DPRadioButton);
 
 	//creates radio button for Complete Response
 	CRRadioButton = new JRadioButton("Complete Response");
 	CRRadioButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+
+		public void actionPerformed(ActionEvent e) { //if button was pressed do...
+
 			if(!(selectedPatient.equals("(none)"))){ //if an ID was selected do...
 				myPats.getPatient(selectedPatient).setResult("CR");
 				updateSelectedTable();
@@ -108,24 +113,22 @@ public class MainPanel extends JPanel {
 	//creates label for patient combo box
 	JLabel patientLabel = new JLabel("Patient ID");
 	patientLabel.setBounds(10, 225, 65, 20);
-	patientLabel.setBackground(Color.DARK_GRAY);
 	add(patientLabel);
 
 	PatientComboBox = new JComboBox(); 
 	patientLabel.setLabelFor(PatientComboBox);
-	PatientComboBox.addActionListener(new ActionListener() {	
+	PatientComboBox.addActionListener(new ActionListener() { //if combobox element is seleced do...
 
-		//if id is selected
 		public void actionPerformed(ActionEvent e) { 
 
 			selectedPatient = (String)PatientComboBox.getSelectedItem(); //stores the id selected
-			updateSelectedTable();
-			updatePatNotes();
+			updateSelectedTable(); //updates selectedTable to show selectedPatients info
+			updatePatNotes(); //updates patientNotes to show selected patients notes, allows editing
 		}
 	});
 	PatientComboBox.setBounds(75, 225, 65, 20); 
 	ArrayList<String> myIds = myPats.getIds(); 
-	setLayout(null); //i dont think i need this but whatevs
+	setLayout(null); //come back and find out exactly why i need this
 	PatientComboBox.setModel(new DefaultComboBoxModel(myIds.toArray()));
 	add(PatientComboBox); 
 
@@ -156,13 +159,13 @@ public class MainPanel extends JPanel {
 	//Creates button to remove patient
 	///////////////////////////////////
 	JButton RemovePatientButton = new JButton("Remove Patient");
-	RemovePatientButton.setForeground(Color.RED);
+	RemovePatientButton.setForeground(Color.RED); //sets remove patient text to RED for additional significance
 	RemovePatientButton.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 
-			int input = JOptionPane.showConfirmDialog(null, "Are you sure you would like to remove this patient?");
-
 			selectedPatient = (String)PatientComboBox.getSelectedItem(); //stores the id selected
+
+			int input = JOptionPane.showConfirmDialog(null, "Are you sure you would like to remove this patient?");
 
 			if(!(selectedPatient.equals("(none)")) && (myIds.contains(selectedPatient) && (input == 0))){ //if an ID was selected do...
 				myPats.removePatient(selectedPatient);
@@ -185,7 +188,6 @@ public class MainPanel extends JPanel {
 	////////////////////////////////
 	//Creates Patient notes text box
 	////////////////////////////////
-
 	//Label for patient notes
 	JLabel patientLabelNotes = new JLabel("Patient Notes: ");
 	patientLabelNotes.setBounds(66, 394, 84, 14);
@@ -204,6 +206,7 @@ public class MainPanel extends JPanel {
 	patientLabelNotes.setLabelFor(patNotesBox);
 	patNotesBox.setBounds(10, 419, 200, 100);
 	add(patNotesBox);
+	updatePatNotes();
 
 	////////////////////////////////
 	//Add Patients from file button
@@ -304,6 +307,7 @@ public class MainPanel extends JPanel {
 			selectedPatient = table.getValueAt(table.getSelectedRow(), 0).toString(); //gets value at table[selected, 0] (selected patient's ID)
 			updateSelectedTable();
 			updatePatNotes();
+			updateComboBox();
 		}
 	});
 	scrollPane.setViewportView(table);
@@ -329,12 +333,15 @@ public class MainPanel extends JPanel {
 			return columnEditables[column];
 		}
 	});
-	
+
+	///////////////////////////////////////
+	//Creates uams badge and parter label
+	///////////////////////////////////////
 	JLabel lblUamsbadge = new JLabel("uamsBADGE");
 	lblUamsbadge.setIcon(new ImageIcon(MainPanel.class.getResource("/pkg/uamsBadge.png")));
-	lblUamsbadge.setBounds(676, 52, 114, 113);
+	lblUamsbadge.setBounds(676, 52, 114, 80);
 	add(lblUamsbadge);
-	
+
 	JLabel lblAPartnerOf = new JLabel("A partner of");
 	lblAPartnerOf.setFont(new Font("Tahoma", Font.PLAIN, 9));
 	lblAPartnerOf.setBounds(694, 40, 71, 14);
@@ -347,6 +354,11 @@ public class MainPanel extends JPanel {
 	updatePatCollectionTable();
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//											METHODS												  //
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	//update selectedTableMethod
 	public void updateSelectedTable() {
 
 		PatientTable.setModel(new DefaultTableModel(
@@ -377,10 +389,6 @@ public class MainPanel extends JPanel {
 			break;
 		}
 	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////METHODS///////////////
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//method to update patient notes text box, given the selected patient
 	public void updatePatNotes(){
@@ -422,6 +430,22 @@ public class MainPanel extends JPanel {
 			table.getColumnModel().getColumn(2).setPreferredWidth(40);
 			table.getColumnModel().getColumn(3).setPreferredWidth(90);
 			table.getColumnModel().getColumn(4).setPreferredWidth(90);
+		}
+	}
+
+	//update combo box method
+	public void updateComboBox() {
+
+		//this was difficult to do
+		//this is incase the user selects a patient via patient collection window (the big one)
+		//, now the patientComboBox will now reflect the new selectedPatient, that way
+		// if the user decides to remove the patient, it will be the one selected via collection table
+		// ...i'm a little proud of this one
+		for(int i = 0; i < PatientComboBox.getItemCount()-1; i++) {
+			if (PatientComboBox.getItemAt(i).equals(selectedPatient)) {
+				PatientComboBox.setSelectedIndex(i);
+				break;
+			}
 		}
 	}
 
