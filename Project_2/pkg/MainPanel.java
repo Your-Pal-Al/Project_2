@@ -32,6 +32,7 @@ import java.awt.event.KeyEvent;
 import java.awt.Font;
 
 
+
 public class MainPanel extends JPanel {
 
 	private PatientCollection myPats;
