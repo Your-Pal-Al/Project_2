@@ -37,6 +37,7 @@ public class PatientCollection implements PatientCollectionADT {
 				for (int i = 3; i < tokens.length-1; i++) {
 					values = values + tokens[i] +",";
 				}
+			
 				values += tokens[tokens.length-1];
 				
 				//if the patients doesn't have a note...
@@ -51,10 +52,6 @@ public class PatientCollection implements PatientCollectionADT {
 					   tokens = nTokens;
 					   tokens[tokens.length-1] = null; //sets last element to null
 				}
-				
-//				else if(tokens.length == 4780) {
-//					
-//				}
 				
 				String prediction = Predictor.predict(Double.parseDouble(tokens[3697]), Double.parseDouble(tokens[3258]));
 				String notes = tokens[tokens.length-1];//adds notes
@@ -74,7 +71,21 @@ public class PatientCollection implements PatientCollectionADT {
 					for (int i = 3; i < tokens.length-2; i++) {
 						values = values + tokens[i] +",";
 					}
-					values += tokens[tokens.length-2];
+					values += tokens[tokens.length-2];	
+					
+					//if the patients doesn't have a note...
+					if(tokens.length == 4779) {
+						
+						String nTokens[] = new String[tokens.length + 1];
+						
+						//copies old elements to new array
+						for (int i = 0; i < tokens.length; i++){
+						      nTokens[i] = tokens[i];
+						   }
+						   tokens = nTokens;
+						   tokens[tokens.length-1] = null; //sets last element to null
+					}
+					
 					String notes = tokens[tokens.length-1];//add notes
 					Patient toAdd = new Patient(tokens[0],tokens[1],tokens[2],values, notes);
 					myPatients.add(toAdd);
@@ -122,12 +133,30 @@ public class PatientCollection implements PatientCollectionADT {
 				int index = line.indexOf(',');
 				String values =line.substring(index+1);
 				String prediction = Predictor.predict(Double.parseDouble(tokens[3697]), Double.parseDouble(tokens[3258]));
+				
+				System.out.println(tokens.length);
+				
+				//if the patients doesn't have a note...
+				if(tokens.length == 4777) {
+					
+					String nTokens[] = new String[tokens.length + 1];
+					
+					//copies old elements to new array
+					for (int i = 0; i < tokens.length; i++){
+					      nTokens[i] = tokens[i];
+					   }
+					   tokens = nTokens;
+					   tokens[tokens.length-1] = null; //sets last element to null
+				}
+				
+				System.out.println(tokens.length);
+				
 				String notes = tokens[tokens.length-1];
 				Patient toAdd = new Patient("unknown",prediction,tokens[0],values, notes);
 				if (ids.contains(tokens[0])) {
 					errors += "line # "+lineNum+" "+tokens[0]+" is not a unique identifier\n";
 				}
-				else if (tokens.length!=4777) {
+				else if (tokens.length!=4778) {
 					errors += "line # "+lineNum+" not the correct number of values\n";
 				}
 				else {
